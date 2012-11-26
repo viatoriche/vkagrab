@@ -1,0 +1,6 @@
+VK Photo Albums grabber
+
+cd ~/pictures/
+vkagrab --uid ne2ch
+
+ls ne2ch
