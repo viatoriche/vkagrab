@@ -8,6 +8,7 @@ License: GPL (see http://www.gnu.org/licenses/gpl.txt)
 import logging
 import os
 from grab import Grab
+from grab import error as grab_errors
 import re
 from time import sleep
 
@@ -61,7 +62,10 @@ class VKG(Grab):
             self.submit()
 
     def go_vk(self, uri):
-        self.go(self.vkurl.format(uri))
+        try:
+            self.go(self.vkurl.format(uri))
+        except grab_errors.GrabTimeoutError:
+            self.go_vk(self, uri)
 
     def get_photo(self, name, start, uri, inc):
         print 'Download: ', inc, uri[1:]
