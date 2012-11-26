@@ -11,6 +11,14 @@ from grab import Grab
 import re
 from time import sleep
 
+try:
+    import config
+    LOGIN = config.login
+    PASSWORD = config.password
+except:
+    LOGIN = None
+    PASSWORD = None
+
 class VKG(Grab):
     """Grabber photo albums
 
@@ -28,19 +36,29 @@ class VKG(Grab):
             self.dest_dir = dest_dir.decode('UTF-8') + u'/{}'
         else:
             self.dest_dir = self.grab_uid + u'/{}'
+
+        try:
+            os.mkdir(self.dest_dir.format(''))
+        except OSError:
+            pass
+
         self.login = login
         self.password = password
         Grab.__init__(self)
-        if self.login is not None and self.password is not None:
-            self.auth()
         if log_dir is not None:
             self.setup(log_dir = log_dir)
+        self.auth()
 
     def auth(self):
         """Auth VK
-
-        TODO:create it
         """
+        if self.login is not None and self.password is not None:
+            print 'Auth with {}'.format(self.login)
+            self.go('http://login.vk.com/?act=login')
+            self.set_input('email', self.login)
+            self.set_input('pass', self.password)
+            self.set_input('expire', '')
+            self.submit()
 
     def go_vk(self, uri):
         self.go(self.vkurl.format(uri))
@@ -50,11 +68,12 @@ class VKG(Grab):
         self.go_vk(uri[1:])
 
         try:
-            full_size_url = self.xpath_list('//*[@class="actions"]')[0]\
-                        .xpath('li')[0].xpath('a')[0].get('href')
+            actions = self.xpath_list('//*[@class="actions"]')[0].xpath('li')
         except IndexError:
             sleep(2)
             return self.get_photo(name, start, uri, inc)
+
+        full_size_url = actions[-1:][0].xpath('a')[0].get('href')
 
         filename = os.path.basename(full_size_url)
         dest_file = u'{}/{}_{}'.format(self.dest_dir.format(name),
@@ -67,7 +86,7 @@ class VKG(Grab):
             next_uri = 'Done'
 
         try:
-            open(dest_file)
+            open(dest_file, 'rb')
         except IOError:
             self.download(full_size_url, dest_file)
 
@@ -130,7 +149,10 @@ class VKG(Grab):
 
 def test():
     logging.basicConfig(level=logging.DEBUG)
-    vkg = VKG('odept', dest_dir = 'odept', log_dir = 'logs')
+    vkg = VKG('id41180005', dest_dir = 'id41180005', log_dir = 'logs',
+                login=LOGIN, password = PASSWORD)
+    #vkg = VKG('ne2ch', dest_dir = 'ne2ch', log_dir = 'logs',
+                #login=None, password = None)
     vkg.start()
 
 def main():
@@ -145,16 +167,13 @@ def main():
             dest_dir = arg[1]
         else:
             dest_dir = uid
-        try:
-            os.mkdir(dest_dir)
-        except OSError:
-            pass
-        vkg = VKG(uid, dest_dir = dest_dir)
+        vkg = VKG(uid, dest_dir = dest_dir,
+                    login = LOGIN, password = PASSWORD)
         vkg.start()
 
 if __name__ == '__main__':
-    test()
-    #main()
+    #test()
+    main()
 
 # vi: ft=python:tw=0:ts=4
 

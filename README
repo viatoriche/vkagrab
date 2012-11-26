@@ -1,6 +1,7 @@
 VK Photo Albums grabber
 
-cd ~/pictures/
-vkagrab --uid ne2ch
+cp config.py.sample config.py
+edit: config.py [login, password]
+python vkagrab.py ne2ch:boards
 
-ls ne2ch
+ls boards
