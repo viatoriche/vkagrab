@@ -5,3 +5,6 @@ edit: config.py [login, password]
 python vkagrab.py ne2ch:boards
 
 ls boards
+
+depends: Grab
+	pip install grab
