@@ -2,6 +2,7 @@ VK Photo Albums grabber
 
 cp config.py.sample config.py
 edit: config.py [login, password]
+	Warning: mass grabbing may cause banhammer
 python vkagrab.py ne2ch:boards
 
 ls boards
