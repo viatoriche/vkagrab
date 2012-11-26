@@ -48,6 +48,7 @@ class VKG(Grab):
         Grab.__init__(self)
         if log_dir is not None:
             self.setup(log_dir = log_dir)
+        self.setup(hammer_mode=True, hammer_timeouts=((2, 5), (10, 15), (20, 30)))
         self.auth()
 
     def auth(self):
@@ -61,11 +62,14 @@ class VKG(Grab):
             self.set_input('expire', '')
             self.submit()
 
+    #def go_vk(self, uri):
+        #try:
+            #self.go(self.vkurl.format(uri))
+        #except grab_errors.GrabTimeoutError:
+            #self.go_vk(self, uri)
+
     def go_vk(self, uri):
-        try:
-            self.go(self.vkurl.format(uri))
-        except grab_errors.GrabTimeoutError:
-            self.go_vk(self, uri)
+        self.go(self.vkurl.format(uri))
 
     def get_photo(self, name, start, uri, inc):
         print 'Download: ', inc, uri[1:]
@@ -115,7 +119,10 @@ class VKG(Grab):
     def get_photos(self, name, uri):
         print 'Get album: ', name
         self.go_vk(uri[1:])
-        photos = self.xpath_list('//*[@class="al_photo"]')
+        try:
+            photos = self.xpath_list('//*[@class="al_photo"]')
+        except IndexError:
+            return
         uri = photos[0].get('href')
         self.get_photo(name, uri, uri, 1)
 
