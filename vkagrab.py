@@ -95,7 +95,7 @@ class VKG(Grab):
             sleep(4)
             return self.get_photo(name, start, uri, inc)
 
-        full_size_url = actions[-1:][0].xpath('a')[0].get('href')
+        full_size_url = actions[-2:][0].xpath('a')[0].get('href')
 
         filename = os.path.basename(full_size_url)
         dest_file = u'{}/{}_{}'.format(self.dest_dir.format(name),
