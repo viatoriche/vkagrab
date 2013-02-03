@@ -33,7 +33,7 @@ class VKG(Grab):
     password - password for auth
     """
     vkurl = u'http://m.vk.com/{}'
-    denied_smbs = u'/\:*?«<>|'
+    denied_smbs = u'/\:*?«<>|"'
     GROUP = 0
     USER = 1
     state_file = 'state.tmp'
